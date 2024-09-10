@@ -84,14 +84,18 @@ export class TMyTaskQueue<T extends MyTask> {
             return;
         }
 
-        let day = moment(this.GetLastDay(fromIdx)).add(1, 'd').toDate();
+        let day = moment(this.GetLastDay(fromIdx));
         let idx = fromIdx;
         for (; idx < this.tasks.length; ++idx) {
             let task = this.tasks[idx];
-            task.SetStartDay(day, true);
+            let tmpStart = moment(day);
+            tmpStart.add(1, 'd');
+            //console.log('SetStartDay:' + tmpStart.format("YYYY-MM-DD"));
+            task.SetStartDay(tmpStart.toDate(), true);
             let taskLast = task.GetStopDay();
-            if (taskLast.toDate() > day) {
-                day = taskLast.add(1, 'd').toDate();
+            //console.log('GetStopDay:' + taskLast.format("YYYY-MM-DD"));
+            if (taskLast > day) {
+                day = taskLast;
             }
         }
     }

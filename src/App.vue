@@ -18,7 +18,7 @@ let currTask = ref();
 
 function OnTaskClick(task, event) {
     currTask.value = task;
-    editorLeft.value = event.pageX;
+    editorLeft.value = event.pageX + 30;
     editorTop.value = event.pageY;
     showEventEdit.value = true;
 }

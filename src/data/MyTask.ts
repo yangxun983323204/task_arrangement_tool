@@ -118,7 +118,7 @@ export class MyTask {
         }
         s += `${this.title}    [${this.duration}天`;
         if (this.offset != 0) {
-            s += `,${this.offset < 0 ? "提前" : "延后"}${Math.abs(this.offset)}天】`;
+            s += `,${this.offset < 0 ? "提前" : "延后"}${Math.abs(this.offset)}天]`;
         }
         else {
             s += ']';

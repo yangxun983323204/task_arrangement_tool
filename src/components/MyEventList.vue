@@ -5,16 +5,19 @@ import { MyTask } from '@/data/MyTask';
 import { TMyTaskQueue } from '@/data/TMyTaskQueue';
 import { MyTaskVO } from '@/data/MyTaskVO';
 import moment from 'moment';
-import MyEventEdit from './MyEventEdit.vue';
+import Confirm from './Confirm.vue';
 
 defineEmits(['on-task-click'])
 let showTimePicker = ref(false);
-let taskQueue: Ref<TMyTaskQueue<MyTaskVO>> | undefined = inject('taskQueue')
+let showDeleteConfirm = ref(false);
+let taskQueue: Ref<TMyTaskQueue<MyTaskVO>> | undefined = inject('taskQueue');
+let willDeletedTask: any;
 
 function AddTask() {
     taskQueue?.value.AddTask();
 }
 function RemoveTask(t: MyTaskVO) {
+    showDeleteConfirm.value = false;
     taskQueue?.value.RemoveTask(t);
 }
 function Clear() {
@@ -25,12 +28,6 @@ function OnChange(e) {
     if (taskQueue == undefined)
         return;
 
-    // log
-    /*for (var i = 0; i < taskQueue?.value.tasks.length; ++i) {
-        let task = taskQueue?.value.tasks[i];
-        console.log(task.title);
-    }*/
-    //
     taskQueue?.value.RecalcAllTaskTime();
 }
 function SetStartTime(e: Date) {
@@ -44,6 +41,15 @@ function ToggleTimePicker() {
 }
 function HideTimePicker() {
     showTimePicker.value = false;
+}
+
+function OnWillDeleteTask(task: any) {
+    showDeleteConfirm.value = true;
+    willDeletedTask = task;
+}
+function CancelDeleteTask() {
+    showDeleteConfirm.value = false;
+    willDeletedTask = null;
 }
 </script>
 
@@ -63,10 +69,12 @@ function HideTimePicker() {
         <template #item="{ element }">
             <v-btn block class="rounded elevation-4 my-2 cursor-move" @click="$emit('on-task-click', element, $event)">
                 {{ element.GetTitle() }}
-                <v-icon icon="mdi-close-box-outline" @click.stop="() => { RemoveTask(element); }"></v-icon>
+                <v-icon icon="mdi-close-box-outline" @click.stop="OnWillDeleteTask(element)"></v-icon>
             </v-btn>
         </template>
     </draggable>
+    <Confirm :dialog="showDeleteConfirm" @confirm="RemoveTask(willDeletedTask)" @cancel="CancelDeleteTask()"
+        @afterLeave="CancelDeleteTask()"></Confirm>
 </template>
 
 <style scoped>

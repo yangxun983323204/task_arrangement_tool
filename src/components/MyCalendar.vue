@@ -66,7 +66,7 @@ function dayInfo(arg) {
             {{ dayInfo(arg) }}
         </template>
         <template v-slot:eventContent="arg">
-            <b style="text-shadow:0px 0px 5px #000000FF">{{ taskQueue?.FindById(arg.event.id)?.GetShortInfo()}}</b>
+            <b style="text-shadow:0px 0px 1px #000000FF">{{ taskQueue?.FindById(arg.event.id)?.GetShortInfo()}}</b>
         </template>
     </FullCalendar>
 </template>

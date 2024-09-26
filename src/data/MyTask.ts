@@ -55,9 +55,23 @@ export class MyTask {
     SetStartDay(wantStart: Date, mute: boolean = false) {
         this.__wantStart = wantStart;
         let want = moment(wantStart);
-        want.add(this._offset, 'd');
         if (!this.forceWork) {
             MyTask.NextToWorkday(want);
+            // 应用偏移
+            let offsetCnt = Math.abs(this._offset);
+            for (let i = 0; i < offsetCnt; i++) {
+                if (this._offset < 0) {
+                    want.add(-1, 'd');
+                    MyTask.PreToWorkday(want);
+                }
+                else if (this._offset > 0) {
+                    want.add(1, 'd');
+                    MyTask.NextToWorkday(want);
+                }
+            }
+        }
+        else {
+            want.add(this._offset, 'd');
         }
         this.__dynamicStart = want.toDate();
         if (!mute) {
@@ -90,7 +104,12 @@ export class MyTask {
 
         return stopDay;
     }
-
+    // 向前移动到工作日
+    static PreToWorkday(m: moment.Moment) {
+        while (!chineseDays.getDayDetail(m.format("YYYY-MM-DD")).work) {
+            m.add(-1, 'd');
+        }
+    }
     // 向后移动到工作日
     static NextToWorkday(m: moment.Moment) {
         while (!chineseDays.getDayDetail(m.format("YYYY-MM-DD")).work) {
@@ -102,7 +121,7 @@ export class MyTask {
         this.color = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6)
     }
 
-    GetTitle():string{
+    GetTitle(): string {
         let s = '';
         if (this.forceWork) {
             s += '[急]'
